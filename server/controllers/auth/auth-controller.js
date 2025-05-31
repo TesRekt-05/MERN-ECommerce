@@ -30,7 +30,8 @@ const loginUser = async (req, res) => {
         res.status(500).json({
             sucess: false,
             message: "some error occured",
-        })
+        })  
+        
     }
 }
 
