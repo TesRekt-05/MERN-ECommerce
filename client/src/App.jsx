@@ -15,16 +15,11 @@ import ShoppingHome from "./pages/shopping-view/home";
 import ShoppingListing from "./pages/shopping-view/listing";
 import CheckAuth from "./components/common/check-auth";
 import UnauthPage from "./pages/unauth-page";
+import { useSelector } from "react-redux";
 
 export default function App() {
 
-
-  const isAuthenticated = false;
-  const user = null
-  // {
-  //   name:"Sahil",
-  //   role : "user",
-  // }
+  const {user,isAuthenticated} = useSelector(state =>state.auth)
 
 
   return (

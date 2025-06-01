@@ -1,8 +1,5 @@
-
-const AdminDashboard = () => {
-  return (
-    <div>AdminDashboard</div>
-  )
+function AdminDashboard() {
+  return <div>Welcome, Admin!</div>;
 }
 
 export default AdminDashboard

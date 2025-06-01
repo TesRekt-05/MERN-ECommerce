@@ -2,17 +2,32 @@ import CommonForm from "@/components/common/form";
 import { loginFormControls } from "@/config";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner"
+import { useDispatch } from "react-redux";
+import { loginUser } from "@/store/auth-slice";
 
 const initialState = {
   email: "",
   password: "",
 };
 
- function onSubmit(){}
-
 function AuthLogin () {
+   const [formData, setFormData] = useState(initialState);
+   const dispatch = useDispatch();
 
-  const [formData, setFormData] = useState(initialState);
+   function onSubmit(event) {
+     event.preventDefault();
+     dispatch(loginUser(formData)).then((data) => {
+       if (data?.payload?.success) {
+         toast(data?.payload?.message || "Login successful!");
+       } else {
+         toast(
+           data?.payload?.message || "Login failed!",
+           { variant: "destructive" }
+         );
+       }
+     });
+   }
 
 
  return (
