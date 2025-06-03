@@ -1,4 +1,4 @@
-
+import ProductImageUpload from "@/components/admin-view/image-upload";
 import CommonForm from "@/components/common/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,11 +7,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Fragment, useState } from "react";
 import { addProductFormElements } from "@/config";
-import ProductImageUpload from "@/components/admin-view/image-upload";
-
-
+import {
+  addNewProduct,
+  fetchAllProducts,
+} from "@/store/admin/products-slice/index";
+import { Fragment, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 
 
@@ -39,14 +42,34 @@ const Adminproducts = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [imageLoadingState, setImageLoadingState] = useState(false);
+  const { productList } = useSelector((state) => state.adminProducts);
+  const dispatch = useDispatch();
 
 
-
-  function onSubmit() {
-
+  function onSubmit(event) {
+    event.preventDefault();
+    dispatch(addNewProduct({
+      ...formData,
+      image: uploadedImageUrl,
+    })).then((data) => {
+      console.log(data);
+      if (data?.payload?.success) {
+        dispatch(fetchAllProducts());
+        setOpenCreateProductsDialog(false);
+        setImageFile(null);
+        setFormData(initialFormData);
+        toast('Product added successfully');
+      }
+    })
   }
 
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
 
+
+  console.log(productList, uploadedImageUrl, "productList");
 
 
   return <Fragment>
@@ -55,7 +78,9 @@ const Adminproducts = () => {
         Add New Product
       </Button>
     </div>
-    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4"></div>
+    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+
+    </div>
     <Sheet open={openCreateProductsDialog}
       onOpenChange={() => {
         setOpenCreateProductsDialog(false);
@@ -67,10 +92,12 @@ const Adminproducts = () => {
           </SheetTitle>
         </SheetHeader>
         <ProductImageUpload imageFile={imageFile}
-            setImageFile={setImageFile}
-            uploadedImageUrl={uploadedImageUrl}
-            setUploadedImageUrl={setUploadedImageUrl} 
-            />
+          setImageFile={setImageFile}
+          uploadedImageUrl={uploadedImageUrl}
+          setUploadedImageUrl={setUploadedImageUrl}
+          setImageLoadingState={setImageLoadingState}
+          imageLoadingState={imageLoadingState}
+        />
         <div className="py-6">
           <CommonForm
             onSubmit={onSubmit}
