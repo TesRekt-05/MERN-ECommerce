@@ -21,7 +21,8 @@ function ProductImageUpload({
     imageLoadingState,
     uploadedImageUrl,
     setUploadedImageUrl,
-    setImageLoadingState
+    setImageLoadingState,
+    isEditMode,
 }) {
 
     const inputRef = useRef(null);
@@ -77,20 +78,21 @@ function ProductImageUpload({
             <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
             <div onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                className="border-2 border-dashed rounded-lg p-4">
+                className={`${isEditMode ? 'opacity-60' : ""} border-2 border-dashed rounded-lg p-4`}>
                 <Input
                     id="image-upload"
                     type="file"
                     className="hidden"
                     ref={inputRef}
                     onChange={handleImageFileChange}
+                    disaabled = {isEditMode}
                 />
                 {
                     !imageFile ?
                         (<Label
                             htmlFor="image-upload"
                             className="flex flex-col items-center justify-center h-32 cursor-pointer">
-                            <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
+                            <UploadCloudIcon className={`${isEditMode ? "cursor-not-allowed" : ""} w-10 h-10 text-muted-foreground mb-2`} />
                             <span>Drag & drop or click to upload image</span>
                         </Label>)
                         :
