@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const authRouter = require("./routes/auth/auth-routes");
 const adminProductsRouter = require('./routes/admin/products-routes')
+const shopProductsRouter = require("./routes/shop/products-routes");
+
 
 //creating database connection 
 mongoose.connect('mongodb+srv://SAHIL7433:SAHIL5644@cluster0.0jppnwk.mongodb.net/'
@@ -35,6 +37,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use ('/api/auth' ,authRouter);
 app.use ('/api/admin/products' ,adminProductsRouter);
+app.use ('/api/shop/products',shopProductsRouter);
 
 
 
