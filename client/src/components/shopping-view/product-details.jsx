@@ -3,10 +3,35 @@ import { Separator } from '@radix-ui/react-dropdown-menu';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { StarIcon } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, fetchCartItems } from '@/store/shop/cart-slice';
+import { toast } from 'sonner';
 
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
-    console.log("Dialog open:", open);
+
+    const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.auth);
+
+
+    function handleAddToCart(getCurrentProductId) {
+        console.log(getCurrentProductId);
+        dispatch(addToCart({
+            userId: user?.id,
+            productId: getCurrentProductId,
+            quantity: 1,
+        })).then((data) => {
+            if (data?.payload?.success) {
+                dispatch(fetchCartItems(user?.id));
+                toast("Added to cart");
+            }
+        });
+    }
+
+
+
+
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
@@ -51,12 +76,12 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                         ) : ( */}
                         <Button
                             className="w-full"
-                        // onClick={() =>
-                        //     handleAddToCart(
-                        //         productDetails?._id,
-                        //         productDetails?.totalStock
-                        //     )
-                        // }
+                            onClick={() =>
+                                handleAddToCart(
+                                    productDetails?._id,
+                                    productDetails?.totalStock
+                                )
+                            }
                         >
                             Add to Cart
                         </Button>
