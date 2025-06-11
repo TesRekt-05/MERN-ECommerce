@@ -2,19 +2,24 @@ import ProductFilter from "@/components/shopping-view/filter";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Button } from "@/components/ui/button";
-import { sortOptions } from "@/config";
-import { fetchAllFilteredProducts, fetchProductDetails } from "@/store/shop/products-slice";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger
-} from "@radix-ui/react-dropdown-menu";
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { sortOptions } from "@/config";
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import {
+  fetchAllFilteredProducts,
+  fetchProductDetails,
+} from "@/store/shop/products-slice";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 
 function createSearchParamsHelper(filterParams) {
@@ -35,10 +40,12 @@ function createSearchParamsHelper(filterParams) {
 function ShoppingListing() {
   const dispatch = useDispatch();
   const { productList, productDetails } = useSelector(state => state.shopProducts);
+    const { cartItems } = useSelector((state) => state.shopCart);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [OpenDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
 
 
@@ -73,6 +80,39 @@ function ShoppingListing() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
+  function handleAddtoCart(getCurrentProductId) {
+    console.log(getCurrentProductId);
+
+    // let getCartItems = cartItems.items || [];
+
+    // if (getCartItems.length) {
+    //   const indexOfCurrentItem = getCartItems.findIndex(
+    //     (item) => item.productId === getCurrentProductId
+    //   );
+    //   if (indexOfCurrentItem > -1) {
+    //     const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+    //     if (getQuantity + 1 > getTotalStock) {
+    //       toast({
+    //         title: `Only ${getQuantity} quantity can be added for this item`,
+    //         variant: "destructive",
+    //       });
+
+    //       return;
+    //     }
+    //   }
+    // }
+    dispatch(addToCart({
+      userId: user?.id,
+      productId: getCurrentProductId,
+      quantity: 1,
+    })).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+        toast("Added to cart");
+      }
+    });
+  }
+
   useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
@@ -98,8 +138,9 @@ function ShoppingListing() {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
+  console.log(cartItems, "cartItems");
+  
 
-  console.log(productDetails, "productDetails");
 
 
   return (
@@ -150,15 +191,15 @@ function ShoppingListing() {
               <ShoppingProductTile
                 handleGetProductDetails={handlegetProductDetails}
                 product={productItem}
-              // handleAddtoCart={handleAddtoCart}
+                handleAddtoCart={handleAddtoCart}
               />
             )) : null}
 
         </div>
       </div>
-      <ProductDetailsDialog  open={OpenDetailsDialog}
-    setOpen={setOpenDetailsDialog}
-    productDetails={productDetails} />
+      <ProductDetailsDialog open={OpenDetailsDialog}
+        setOpen={setOpenDetailsDialog}
+        productDetails={productDetails} />
     </div>
   );
 }

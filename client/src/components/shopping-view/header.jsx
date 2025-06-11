@@ -1,10 +1,11 @@
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
+import {
+  Link,
+  useNavigate,} from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Link, useNavigate, } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { shoppingViewHeaderMenuItems } from "@/config";
-import { Label } from "../ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
-import {  useState } from "react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
+import UserCartWrapper from "./cart-wrapper";
+import { useEffect, useState } from "react";
+import { fetchCartItems } from "@/store/shop/cart-slice";
+import { Label } from "../ui/label";
 
 
 function MenuItems() {
@@ -39,10 +43,9 @@ function MenuItems() {
 
 function HeaderRightContent() {
   const { user } = useSelector((state) => state.auth);
-  const navigate = useNavigate();
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
 
 
   function handleLogout() {
@@ -51,21 +54,26 @@ function HeaderRightContent() {
 
 
 
+
+
+
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4">
-
-      <Button
-        onClick={() => setOpenCartSheet(true)}
-        variant="outline"
-        size="icon"
-        className="relative"
-      >
-        <ShoppingCart className="w-6 h-6" />
-        {/* <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
+      <Sheet open ={openCartSheet} onOpenChange={()=> setOpenCartSheet(false)}>
+        <Button
+          onClick={() => setOpenCartSheet(true)}
+          variant="outline"
+          size="icon"
+          className="relative"
+        >
+          <ShoppingCart className="w-6 h-6" />
+          {/* <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
             {cartItems?.items?.length || 0}
           </span> */}
-        <span className="sr-only">User cart</span>
-      </Button>
+          <span className="sr-only">User cart</span>
+        </Button>
+        <UserCartWrapper/>
+      </Sheet>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
