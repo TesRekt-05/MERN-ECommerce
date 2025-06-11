@@ -40,7 +40,6 @@ function createSearchParamsHelper(filterParams) {
 function ShoppingListing() {
   const dispatch = useDispatch();
   const { productList, productDetails } = useSelector(state => state.shopProducts);
-    const { cartItems } = useSelector((state) => state.shopCart);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -137,8 +136,6 @@ function ShoppingListing() {
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
-
-  console.log(cartItems, "cartItems");
   
 
 
