@@ -6,6 +6,7 @@ import { StarIcon } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, fetchCartItems } from '@/store/shop/cart-slice';
 import { toast } from 'sonner';
+import { setProductDetails } from '@/store/shop/products-slice';
 
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
@@ -29,11 +30,14 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     }
 
 
-
+function handleDialogClose() {
+    setOpen(false);
+    dispatch(setProductDetails())
+}
 
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleDialogClose}>
             <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
              bg-white rounded-lg shadow-lg grid grid-cols-2 gap-8 sm:p-12 max-w-[90vw] 
              sm:max-w-[80vw] lg:max-w-[70vw]">

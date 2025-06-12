@@ -1,7 +1,9 @@
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
 import {
   Link,
+  useLocation,
   useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
@@ -18,21 +20,42 @@ import {
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
-import { Label } from "../ui/label";
-
+import { Label } from "@radix-ui/react-dropdown-menu";
 
 function MenuItems() {
 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  function handleNavigate(getCurrentMenuItem) {
+    sessionStorage.removeItem("filters");
+    const currentFilter =
+      getCurrentMenuItem.id !== "home" &&
+        getCurrentMenuItem.id !== "products" &&
+        getCurrentMenuItem.id !== "search"
+        ? {
+          category: [getCurrentMenuItem.id],
+        }
+        : null;
+
+    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+
+    location.pathname.includes("listing") && currentFilter !== null
+      ? setSearchParams(
+        new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
+      )
+      : navigate(getCurrentMenuItem.path);
+  }
 
   return (
     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
       {shoppingViewHeaderMenuItems.map((menuItem) => (
         <Label
-          // onClick={() => handleNavigate(menuItem)}
           className="text-sm font-medium cursor-pointer"
+          onClick={() => handleNavigate(menuItem)}
           key={menuItem.id}
         >
           {menuItem.label}
@@ -77,7 +100,9 @@ function HeaderRightContent() {
           </span> */}
           <span className="sr-only">User cart</span>
         </Button>
-        <UserCartWrapper cartItems={cartItems && cartItems.items && cartItems.items.length > 0 ? cartItems.items: [] } />
+        <UserCartWrapper cartItems={
+          cartItems && cartItems.items && cartItems.items.length > 0 ?
+            cartItems.items : []} />
       </Sheet>
 
       <DropdownMenu>
