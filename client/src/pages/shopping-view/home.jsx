@@ -11,6 +11,7 @@ import ShoppingProductTile from '@/components/shopping-view/product-tile';
 import { useNavigate } from 'react-router-dom';
 import { addToCart, fetchCartItems } from '@/store/shop/cart-slice';
 import { toast } from 'sonner';
+import ProductDetailsDialog from '@/components/shopping-view/product-details';
 
 
 
@@ -41,6 +42,8 @@ const ShoppingHome = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [OpenDetailsDialog, setOpenDetailsDialog] = useState(false);
+
 
 
   function handleNavigateToListingPage(getCurrentItem, section) {
@@ -55,8 +58,7 @@ const ShoppingHome = () => {
 
 
   function handleGetProductDetails(getCurrentProductId) {
-    console.log("getCurrentProductId", getCurrentProductId);
-    // dispatch(fetchProductDetails(getCurrentProductId));
+    dispatch(fetchProductDetails(getCurrentProductId));
   }
 
 
@@ -98,6 +100,9 @@ const ShoppingHome = () => {
   console.log("productList", productList);
 
 
+  useEffect(() => {
+    if (productDetails !== null) setOpenDetailsDialog(true);
+  }, [productDetails]);
 
 
 
@@ -188,13 +193,17 @@ const ShoppingHome = () => {
                 <ShoppingProductTile
                   handleGetProductDetails={handleGetProductDetails}
                   product={productItem}
-                handleAddtoCart={handleAddtoCart}
+                  handleAddtoCart={handleAddtoCart}
                 />
               ))
               : null}
           </div>
         </div>
       </section>
+      <ProductDetailsDialog
+        open={OpenDetailsDialog}
+        setOpen={setOpenDetailsDialog}
+        productDetails={productDetails} />
 
     </div>
   )
